@@ -83,7 +83,7 @@ def main():
 
             if event.type == pg.JOYDEVICEADDED:
                 if pgc.is_controller(event.device_index):
-                    logger.info(f"Joystick ID-{event.device_index} added (Controller).")
+                    logger.debug(f"Joystick ID-{event.device_index} added (Controller).")
                 else:
                     logger.info(f"Joystick ID-{event.device_index} added (Joystick).")
                     logger.info("Attempting to convert bad Joystick...")
@@ -96,7 +96,17 @@ def main():
                         logger.warning(f"Error {ex.__class__}: {ex}")
 
             if event.type == pg.JOYDEVICEREMOVED:
-                logger.info(f"Joystick ID-{event.instance_id} removed.")
+                logger.debug(f"Joystick ID-{event.instance_id} removed.")
+            if event.type == pg.JOYAXISMOTION:
+                logger.debug(f"Joystick ID-{event.instance_id} Axis {event.axis}: {event.value}")
+            if event.type == pg.JOYHATMOTION:
+                logger.debug(f"Joystick ID-{event.instance_id} Hat {event.hat}: {event.value}")
+            if event.type == pg.JOYBALLMOTION:
+                logger.debug(f"Joystick ID-{event.instance_id} Ball {event.ball}: {event.rel}")
+            if event.type == pg.JOYBUTTONDOWN:
+                logger.debug(f"Joystick ID-{event.instance_id} Button {event.button}: down")
+            if event.type == pg.JOYBUTTONUP:
+                logger.debug(f"Joystick ID-{event.instance_id} Button {event.button}: up")
 
             if event.type == pg.CONTROLLERDEVICEADDED:
                 try:
@@ -137,12 +147,13 @@ def main():
 
         screen.fill((0, 0, 0))
 
-        lines: list[str] = [f"{pgc.get_count()} controllers detected."]
+        lines: list[str] = [f"{pgc.get_count()} controller(s) detected. (ESC to quit program.)"]
 
         for i, c in enumerate(controllers.values()):
             if display_index != i:
                 continue
-            lines.append(f"Controller {display_index + 1}/{pgc.get_count()}")
+
+            lines.append(f"Controller {display_index + 1}/{pgc.get_count()} (Use arrow keys to cycle controllers.)")
             lines.append(f"Controller ID-{c.id} \"{c.name}\"")
             lines.append(f"Rumble supported: {rumbles[c.id]}")
             lines.append(f"Attached: {bool(c.attached())}")
