@@ -54,6 +54,7 @@ BUTTON_NAMES = {
 
 def main():
     logger.info("Program started.")
+    logger.info(f"pygame{"-ce" if getattr(pg, "IS_CE", False) else ""} v{pg.version.vernum} SDL v{pg.version.SDL}")
     pg.display.set_caption("Controller Testing")
     screen = pg.display.set_mode((500, 500))
     clock = pg.time.Clock()
@@ -135,15 +136,18 @@ def main():
 
             if event.type == pg.CONTROLLERDEVICEREMAPPED:
                 c = controllers[event.instance_id]
-                logger.info(f"Controller {c.id} {c.name} remapped.")
+                logger.info(f"Controller ID-{c.id} \"{c.name}\" remapped.")
                 logger.info(f"Mapping: {c.get_mapping()}")
 
             if event.type == pg.CONTROLLERAXISMOTION:
-                logger.debug(f"Axis {AXIS_NAMES[event.axis]}: {event.value}")
+                c = controllers[event.instance_id]
+                logger.debug(f"Controller ID-{c.id} \"{c.name}\" Axis {AXIS_NAMES[event.axis]}: {event.value}")
             if event.type == pg.CONTROLLERBUTTONDOWN:
-                logger.debug(f"Button {BUTTON_NAMES[event.button]} down")
+                c = controllers[event.instance_id]
+                logger.debug(f"Controller ID-{c.id} \"{c.name}\" Button {BUTTON_NAMES[event.button]} down")
             if event.type == pg.CONTROLLERBUTTONUP:
-                logger.debug(f"Button {BUTTON_NAMES[event.button]} up")
+                c = controllers[event.instance_id]
+                logger.debug(f"Controller ID-{c.id} \"{c.name}\" Button {BUTTON_NAMES[event.button]} up")
 
         screen.fill((0, 0, 0))
 
