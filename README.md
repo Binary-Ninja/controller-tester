@@ -3,6 +3,16 @@ A simple program you can use to test out controller functionality and controller
 
 This program is also intended to determine the best way to interact with controllers in `pygame-ce`. Please report any interesting findings and/or comments regarding this project and controller/joystick support in `pygame-ce` to the [Pygame Community Discord](https://discord.com/invite/pygame).
 
+{On screen icons should match the input device}
+{Mouse cursor should match the input device}
+{Provide mapping functionality for both joystick and controller}
+{Dpad, analog stick, mouse, and keyboard should all be used to navigate menus}
+{Disconnected controller should pause the game}
+
+{Joy vs Controller}
+
+{Tips and Tricks for using controller}
+
 ## How To Use
 Simply download or copy the `controllertest.py` file to your system (optionally also grabbing the `gamecontrollerdb.txt` file). This project was built on Python 3.12.2, but will probably work on earlier versions. Feel free to try out different versions of `pygame-ce`. You can change what mapping file the program is looking for by editing the code. It should be near the top of the file and be pretty obvious.
 
