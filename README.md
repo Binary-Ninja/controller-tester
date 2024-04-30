@@ -13,6 +13,8 @@ This program supports hot-plugging and can handle multiple controllers at once. 
 
 Controller mapping files only seem to work if the GUID is exactly the GUID of your `Controller` device, making them impractical.
 
+The only way to check for rumble support is to call the `Controller.rumble` method, which returns a boolean value indicating whether the effect was played successfully. Calling `rumble` with intensity values of zero will always return True. This indicator value isn't always accurate, and can even return different values when called with the same arguments. Thankfully, most programs won't need to check for rumble support.
+
 ## Proposed `pygame._sdl2.controller` Changes
 - Document `Controller.id` and `Controller.name`
 - Document `pygame.CONTROLLERDEVICEADDED.guid`
