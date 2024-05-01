@@ -19,6 +19,8 @@ This program supports hot-plugging and can handle multiple controllers at once. 
 ## Known Issues / Interesting Things
 `Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. This program works around that by forcing a `pygame.CONTROLLERDEVICEREMAPPED` event (which has the instance id) by using `Controller.set_mapping(Controller.get_mapping())`. Controllers reside in a pending list until the remap event happens. View the code to see how it works.
 
+Controllers that have been removed and re-added will generate `CONTROLLERDEVICEREMAPPED` events for each instance id they once had. If a controller is plugged in three times, it will generate three remap events with each of its previous instance ids.
+
 Controller mapping files only seem to work if the GUID is exactly the GUID of your `Controller` device, making them impractical.
 
 The only way to check for rumble support is to call the `Controller.rumble` method, which returns a boolean value indicating whether the effect was played successfully. Calling `rumble` with intensity values of zero will always return True. This indicator value isn't always accurate, and can even return different values when called with the same arguments. Thankfully, most programs won't need to check for rumble support.
