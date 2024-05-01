@@ -4,7 +4,7 @@ A simple program you can use to test out controller functionality and controller
 ## Goals / Intentions
 This program was developed with the following intentions:
 - Test different controllers to determine if they are recognized and/or accurate
-- Test different controller mapping files
+- Test different controller mapping files/strings
 - Research and improve the API for the `controller` module
 - Determine the best ways to interact with controllers using the `controller` module
 - Compare and contrast the `pygame.controller` module with the `pygame.joystick` module
@@ -12,9 +12,11 @@ This program was developed with the following intentions:
 Interested in controller support for `pygame-ce`? Join the [Pygame Community Discord](https://discord.com/invite/pygame)!
 
 ## How To Use
-Simply download or copy the `controllertest.py` file to your system (optionally also grabbing the `gamecontrollerdb.txt` file). This project was built on Python 3.12.2, but will probably work on earlier versions. Feel free to try out different versions of `pygame-ce`. You can change what mapping file the program is looking for by editing the code. It should be near the top of the file and be pretty obvious.
+Simply download or copy the `controllertest.py` file to your system (optionally also grabbing the `gamecontrollerdb.txt` file). This project was built on Python 3.12.2, but will probably work on earlier versions. Feel free to try out different versions of `pygame-ce` and SDL to see what changes. The included database is there for testing purposes and can be found [here](https://github.com/mdqinc/SDL_GameControllerDB).
 
 This program supports hot-plugging and can handle multiple controllers at once. There is a graphical interface where you can cycle through the controllers the system can see and view the state of their axes and buttons. The program will also generate a log file `controllertest.log`, which you can view to see the controllers being added and removed. Setting the main logger's level to `DEBUG` instead of `INFO` will also show the generated `Joystick` events, as well as the `Controller` events for axis and button updates.
+
+Feel free to open up the code and take a look around!
 
 ## Known Issues / Interesting Things
 `Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. This program works around that by forcing a `pygame.CONTROLLERDEVICEREMAPPED` event (which has the instance id) by using `Controller.set_mapping(Controller.get_mapping())`. Controllers reside in a pending list until the remap event happens. View the code to see how it works.
