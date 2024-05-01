@@ -9,20 +9,12 @@ import pygame._sdl2.controller as pgc
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="controllertest.log", filemode="w", level=logging.INFO)
 
-# Must be set before initializing modules.
-os.environ["SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"] = "1"
-
-
-def add_mappings(filename: str):
-    """Add controller mappings from the given filename."""
-    os.environ["SDL_GAMECONTROLLERCONFIG_FILE"] = os.path.join(os.getcwd(), filename)
-
-
-# Must be set before initializing modules.
-add_mappings("gamecontrollerdb.txt")
-
-pg.init()
-pgc.init()
+# SDL_JOYSTICK_HIDAPI_COMBINE_JOY_CONS = "0" or "1" (default)
+# If set to "1", left and right Joy-Cons will be combined into one controller device.
+# SDL_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS = "0" (default) or "1"
+# If set to "1", Joy-Cons will be in vertical mode when using the HIDAPI driver.
+# SDL_JOYSTICK_ROG_CHAKRAM = "0" (default) or "1"
+# If set to "1", ROG Chakram mice show up as joysticks.
 
 
 AXIS_NAMES = {
@@ -54,6 +46,14 @@ BUTTON_NAMES = {
 
 
 def main():
+    # Must be set before initializing pygame.
+    os.environ["SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"] = "1"
+    # os.environ["SDL_GAMECONTROLLERCONFIG_FILE"] = os.path.join(os.getcwd(), "your_mapping_file_here.txt")
+    # os.environ["SDL_GAMECONTROLLERCONFIG"] = "your_mapping_string_here"
+
+    pg.init()
+    pgc.init()
+
     logger.info("Program started.")
     version_string = f"pygame{"-ce" if getattr(pg, "IS_CE", False) else ""} v{pg.version.vernum} SDL v{pg.version.SDL}"
     logger.info(version_string)
@@ -166,7 +166,7 @@ def main():
                         logger.info(f"Controller DI-{c.id} II-{iid} \"{c.name}\" added. Rumble: {rumbles[iid]}")
                         logger.info(f"Mapping: {c.get_mapping()}")
                     else:
-                        logger.info(f"Controller DI-?? II-{iid} \"UNKNOWN\" remapped.")
+                        logger.debug(f"Controller DI-?? II-{iid} \"UNKNOWN\" remapped.")
 
             if event.type == pg.CONTROLLERAXISMOTION:
                 if event.instance_id in controllers:
