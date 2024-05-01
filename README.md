@@ -23,25 +23,27 @@ The `joystick` module is a stable, flexible API for detecting and getting input 
 
 The `controller` module is an experimental, in development API built over `joystick` for mapping controllers with standard layouts. The documentation is lacking and tutorials are practically non-existent. The `Controller` objects only support axes and buttons. Track balls are not available and hats (d-pads) are split into four separate buttons. This greatly simplifies the API and actually makes it easier on the programmer. `Controllers` provide easy mapping support, and their events look like "Button X down". Most standard layout controllers work with `controller` and won't need to be remapped. The module itself has several issues that make programming around it more difficult than it needs to be, but hopefully that will change in the near future. SDL itself adds new controller mappings to its internal database consistently, so controller support will only get better.
 
-## Guidelines for Development
+If you want to support a wide variety of gamepad devices and don't care about easy mapping functionality, `joystick` is the way to go. If you don't want to worry about all the manual setup needed for mapping and don't mind the weird API, you should use `controller`. ALthough `joystick` has better documentation, `controller` is easier to set up and use out of the box if you aren't going to add mapping and only care about supporting the basic gamepads registered by SDL.
+
+## Guidelines for Gamepad Development
 - Always make gamepad usage completely OPTIONAL. Your application should work just fine with only the mouse and keyboard.
 - Always provide a mapping tool to reconfigure the gamepads.
 - Disconnecting an in-use gamepad should pause the game to avoid accidental disconnects causing player helplessness.
 - Navigating menus should be possible with analog sticks, d-pads, and mouse/keyboard.
 - The on-screen icons should match the gamepad being used. The only way to detect the button icons is to infer it from the system name of the gamepad, which isn't reliable, so applications should also provide a setting to change the icons globally.
 
-## Known Issues / Interesting Things
-`Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. This program works around that by forcing a `pygame.CONTROLLERDEVICEREMAPPED` event (which has the instance id) by using `Controller.set_mapping(Controller.get_mapping())`. Controllers reside in a pending list until the remap event happens. View the code to see how it works.
+## Guide to `controller` Development
+`Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. The only way to get the instance id is from a `pygame.CONTROLLERDEVICE*` event. Using `Controller.set_mapping()` generates a `pygame.CONTROLLERDEVICEREMAPPED` event, so we can work around this issue and make controllers reliable even after device swapping. This program showcases one way to do this, by using a `pending_controllers: list[pygame._sdl2.controller.Controller]` object and a `controllers: dict[int, pygame._sdl2.controller.Controller]` object. When a `pygame.CONTROLLERDEVICEADDED` event is dispatched, create a `Controller` object using the `device_index` attribute of the event, and add that controller to `pending_controllers`. Then, call `Controller.get_mapping(Controller.set_mapping())`. This will not change the controller's mapping, but will still generate the `pygame.CONTROLLERDEVICEREMAPPED` event. When handling that event, check to see if the event's `instance_id` is a key in `controllers`. If not, pop the first element of `pending_controllers` and set `controllers[event.instance_id] = pending_controllers.pop(0)`. Keep in mind that controllers will generate a `pygame.CONTROLLERDEVICEREMAPPED` event for every instance id they once had, so `pending_controllers` is not guaranteed to have a controller inside when `pygame.CONTROLLERDEVICEREMAPPED` events generate with instance ids not in `controllers`. These extra remap events can simply be discarded. See the code to see all of this in action.
 
-Controllers that have been removed and re-added will generate `CONTROLLERDEVICEREMAPPED` events for each instance id they once had. If a controller is plugged in three times, it will generate three remap events with each of its previous instance ids.
+Controller mapping files/strings only seem to work when the GUID in the mapping exactly matches the controller, making them impractical.
 
-Controller mapping files only seem to work if the GUID is exactly the GUID of your `Controller` device, making them impractical.
+You can get the GUID of a `Controller` by reading the `pygame.CONTROLLERDEVICEADDED.guid` attribute.
 
-The only way to check for rumble support is to call the `Controller.rumble` method, which returns a boolean value indicating whether the effect was played successfully. Calling `rumble` with intensity values of zero will always return True. This indicator value isn't always accurate, and can even return different values when called with the same arguments. Thankfully, most programs won't need to check for rumble support.
+The only way to check for rumble support is to call the `Controller.rumble` method, which returns a boolean value indicating whether the effect was played successfully. Calling `rumble` with intensity values of zero will always return True. This indicator value isn't always accurate, and can even return different values when called with the same arguments. Thankfully, most programs won't need to check for rumble support and can just fire away `Controller.rumble()` calls without worrying about whether or not the given `Controller` supports it.
 
 ## Proposed `pygame._sdl2.controller` Changes
 - Document `Controller.id` and `Controller.name`
 - Document `pygame.CONTROLLERDEVICEADDED.guid`
 - Add `get_guid()` method or read-only `guid` attribute to `Controller` (currently only available through `pygame.CONTROLLERDEVICEADDED.guid`)
 - Add `instance_id` functionality to `Controller` like in `Joystick` (`Controller.id` is the device index, unreliable after devices have been added and removed)
-- Add button layout information to `Controller` (it seems to be supported in the SDL source code)
+- Add button layout/icon information to `Controller` (it seems to be supported in the SDL source code)
