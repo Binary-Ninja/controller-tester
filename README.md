@@ -24,11 +24,11 @@ The `joystick` module is a stable, flexible API for detecting and getting input 
 The `controller` module is an experimental, in development API built over `joystick` for mapping controllers with standard layouts. The documentation is lacking and tutorials are practically non-existent. The `Controller` objects only support axes and buttons. Track balls are not available and hats (d-pads) are split into four separate buttons. This greatly simplifies the API and actually makes it easier on the programmer. `Controllers` provide easy mapping support, and their events look like "Button X down". Most standard layout controllers work with `controller` and won't need to be remapped. The module itself has several issues that make programming around it more difficult than it needs to be, but hopefully that will change in the near future. SDL itself adds new controller mappings to its internal database consistently, so controller support will only get better.
 
 ## Guidelines for Development
-Always make gamepad usage completely OPTIONAL. Your application should work just fine with only the mouse and keyboard.
-Always provide a mapping tool to reconfigure the gamepads.
-Disconnecting an in-use gamepad should pause the game to avoid accidental disconnects causing player helplessness.
-Navigating menus should be possible with analog sticks, d-pads, and mouse/keyboard.
-The on-screen icons should match the gamepad being used. The only way to detect the button icons is to infer it from the system name of the gamepad, which isn't reliable, so applications should also provide a setting to change the icons globally.
+- Always make gamepad usage completely OPTIONAL. Your application should work just fine with only the mouse and keyboard.
+- Always provide a mapping tool to reconfigure the gamepads.
+- Disconnecting an in-use gamepad should pause the game to avoid accidental disconnects causing player helplessness.
+- Navigating menus should be possible with analog sticks, d-pads, and mouse/keyboard.
+- The on-screen icons should match the gamepad being used. The only way to detect the button icons is to infer it from the system name of the gamepad, which isn't reliable, so applications should also provide a setting to change the icons globally.
 
 ## Known Issues / Interesting Things
 `Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. This program works around that by forcing a `pygame.CONTROLLERDEVICEREMAPPED` event (which has the instance id) by using `Controller.set_mapping(Controller.get_mapping())`. Controllers reside in a pending list until the remap event happens. View the code to see how it works.
