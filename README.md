@@ -27,15 +27,17 @@ If you want to support a wide variety of gamepad devices and don't care about ea
 
 ## Guidelines for Gamepad Development
 - Always make gamepad usage completely OPTIONAL. Your application should work just fine with only the mouse and keyboard.
-- Always provide a mapping tool to reconfigure the gamepads.
+- Always provide a mapping tool to reconfigure joysticks. "Button 0" isn't always the "Primary Action Button".
+- Provide a remapping tool for controllers. Even if this is a simple json file, letting your users remap their controllers goes a long way.
+- Provide a mapping tool for turning joysticks into controllers. You can piggyback functionality from your conroller remapping file, as they are essentially the same thing.
 - Disconnecting an in-use gamepad should pause the game to avoid accidental disconnects causing player helplessness.
 - Navigating menus should be possible with analog sticks, d-pads, and mouse/keyboard.
-- The on-screen icons should match the gamepad being used. The only way to detect the button icons is to infer it from the system name of the gamepad, which isn't reliable, so applications should also provide a setting to change the icons globally.
+- The on-screen icons should match the gamepad being used. The only way to detect the button icons is to infer it from the system name of the gamepad, which isn't reliable, so applications should also provide a setting to change the icons globally. This is more of an optional polish feature.
 
 ## Guide to `controller` Development
 `Controller.id` is the device index, not the instance id, so it is unreliable after devices have been added and removed. The only way to get the instance id is from a `pygame.CONTROLLERDEVICE*` event. Using `Controller.set_mapping()` generates a `pygame.CONTROLLERDEVICEREMAPPED` event, so we can work around this issue and make controllers reliable even after device swapping. This program showcases one way to do this, by using a `pending_controllers: list[pygame._sdl2.controller.Controller]` object and a `controllers: dict[int, pygame._sdl2.controller.Controller]` object. When a `pygame.CONTROLLERDEVICEADDED` event is dispatched, create a `Controller` object using the `device_index` attribute of the event, and add that controller to `pending_controllers`. Then, call `Controller.get_mapping(Controller.set_mapping())`. This will not change the controller's mapping, but will still generate the `pygame.CONTROLLERDEVICEREMAPPED` event. When handling that event, check to see if the event's `instance_id` is a key in `controllers`. If not, pop the first element of `pending_controllers` and set `controllers[event.instance_id] = pending_controllers.pop(0)`. Keep in mind that controllers will generate a `pygame.CONTROLLERDEVICEREMAPPED` event for every instance id they once had, so `pending_controllers` is not guaranteed to have a controller inside when `pygame.CONTROLLERDEVICEREMAPPED` events generate with instance ids not in `controllers`. These extra remap events can simply be discarded. See the code to see all of this in action.
 
-Controller mapping files/strings only seem to work when the GUID in the mapping exactly matches the controller, making them impractical.
+Controller mapping files/strings only seem to work when the GUID in the mapping exactly matches the controller, making them only useful for local mappings/remappings.
 
 You can get the GUID of a `Controller` by reading the `pygame.CONTROLLERDEVICEADDED.guid` attribute.
 
@@ -46,4 +48,4 @@ The only way to check for rumble support is to call the `Controller.rumble` meth
 - Document `pygame.CONTROLLERDEVICEADDED.guid`
 - Add `get_guid()` method or read-only `guid` attribute to `Controller` (currently only available through `pygame.CONTROLLERDEVICEADDED.guid`)
 - Add `instance_id` functionality to `Controller` like in `Joystick` (`Controller.id` is the device index, unreliable after devices have been added and removed)
-- Add button layout/icon information to `Controller` (it seems to be supported in the SDL source code)
+- Add button layout/icon information to `Controller` (it seems to be supported in the SDL source code) (this is a non-essential quality of life feature)
