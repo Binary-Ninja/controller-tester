@@ -48,6 +48,6 @@ The only way to check for rumble support is to call the `Controller.rumble` meth
 ## Proposed `pygame._sdl2.controller` Changes
 - Document `Controller.id` and `Controller.name`
 - Document `pygame.CONTROLLERDEVICEADDED.guid`
-- Add `get_guid()` method or read-only `guid` attribute to `Controller` (currently only available through `pygame.CONTROLLERDEVICEADDED.guid`)
+- Add `get_guid()` method or read-only `guid` attribute to `Controller` (currently only available through `pygame.CONTROLLERDEVICEADDED.guid` and `Controller.as_joystick().get_guid()`)
 - Add `instance_id` functionality to `Controller` like in `Joystick` (`Controller.id` is the device index, unreliable after devices have been added and removed)
 - Add button layout/icon information to `Controller` (it seems to be supported in the SDL source code) (this is a non-essential quality of life feature)
