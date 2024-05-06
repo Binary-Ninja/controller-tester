@@ -41,7 +41,7 @@ Update: `Controller.from_joystick().get_instance_id()` can be used to get the in
 
 Controller mapping files/strings only seem to work when the GUID in the mapping exactly matches the controller, making them only useful for local mappings/remappings.
 
-You can get the GUID of a `Controller` by reading the `pygame.CONTROLLERDEVICEADDED.guid` attribute.
+You can get the GUID of a `Controller` by reading the `pygame.CONTROLLERDEVICEADDED.guid` attribute or using `Controller.as_joystick().get_guid()`.
 
 The only way to check for rumble support is to call the `Controller.rumble` method, which returns a boolean value indicating whether the effect was played successfully. Calling `rumble` with intensity values of zero will always return True. This indicator value isn't always accurate, and can even return different values when called with the same arguments. Thankfully, most programs won't need to check for rumble support and can just fire away `Controller.rumble()` calls without worrying about whether or not the given `Controller` supports it.
 
